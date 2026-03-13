@@ -271,7 +271,14 @@ export interface Integration {
 }
 
 // LLM Provider types
-export type ProviderType = 'openai' | 'anthropic' | 'ollama' | 'lm_studio' | 'vllm' | 'custom'
+export type ProviderType =
+  | 'openai'
+  | 'anthropic'
+  | 'ollama'
+  | 'lm_studio'
+  | 'vllm'
+  | 'openai_compatible'
+  | 'custom'
 
 export interface LLMProvider {
   id: string

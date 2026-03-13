@@ -11,7 +11,8 @@ Comprehensive guide for configuring and using LLM providers in the Document Anal
 5. [Usage Examples](#usage-examples)
 6. [Cost Estimation](#cost-estimation)
 7. [Local LLM Deployment](#local-llm-deployment)
-8. [Troubleshooting](#troubleshooting)
+8. [OpenAI-Compatible Providers](#openai-compatible-providers)
+9. [Troubleshooting](#troubleshooting)
 
 ## Overview
 
@@ -24,6 +25,7 @@ The Document Analyzer Operator Platform supports multiple LLM providers through 
 | Ollama | Local | No | Free |
 | LM Studio | Local | No | Free |
 | vLLM | Local | No | Free |
+| OpenAI-Compatible | Cloud/Local | Optional | Varies |
 | Custom | Any | Optional | Varies |
 
 ### Features
@@ -281,6 +283,187 @@ For any OpenAI-compatible API:
 }
 ```
 
+## OpenAI-Compatible Providers
+
+The `openai_compatible` provider type allows you to connect to any API service that implements the OpenAI API specification. This includes both self-hosted solutions and cloud services.
+
+### What is OpenAI-Compatible?
+
+OpenAI-compatible APIs follow the same request/response format as OpenAI's API, making them drop-in replacements. They use the same endpoints:
+- `/v1/chat/completions` - Chat completions
+- `/v1/completions` - Text completions
+- `/v1/embeddings` - Embeddings
+- `/v1/models` - List models
+
+### Popular OpenAI-Compatible Services
+
+#### Local Deployment (Self-Hosted)
+
+**LocalAI**
+- URL: `http://localhost:8080/v1`
+- API Key: Not required
+- Description: Self-hosted LocalAI instance with multi-model support
+- Website: https://localai.io/
+
+**FastChat**
+- URL: `http://localhost:8000/v1`
+- API Key: Not required
+- Description: FastChat local server for running open-source models
+- Website: https://github.com/lm-sys/FastChat
+
+**vLLM API Server**
+- URL: `http://localhost:8000/v1`
+- API Key: Not required
+- Description: High-throughput inference server
+- Website: https://github.com/vllm-project/vllm
+
+**Text Generation Inference**
+- URL: `http://localhost:8080/v1`
+- API Key: Not required
+- Description: Hugging Face's optimized inference server
+- Website: https://github.com/huggingface/text-generation-inference
+
+#### Cloud Services
+
+**Together AI**
+- URL: `https://api.together.xyz/v1`
+- API Key: Required
+- Description: Cloud-hosted open-source models with competitive pricing
+- Website: https://together.ai/
+- Models: Llama, Mistral, CodeLlama, and more
+
+**Anyscale Endpoints**
+- URL: `https://api.endpoints.anyscale.com/v1`
+- API Key: Required
+- Description: Ray-powered model serving platform
+- Website: https://anyscale.com/
+- Models: Llama, Mistral, Zephyr
+
+**Groq**
+- URL: `https://api.groq.com/openai/v1`
+- API Key: Required
+- Description: Ultra-fast LPU (Language Processing Unit) inference
+- Website: https://groq.com/
+- Models: Llama, Mixtral, Gemma
+
+**DeepInfra**
+- URL: `https://api.deepinfra.com/v1`
+- API Key: Required
+- Description: Serverless model inference with pay-per-use pricing
+- Website: https://deepinfra.com/
+- Models: 100+ open-source models
+
+**Lepton AI**
+- URL: `https://<workspace>.lepton.run/api/v1`
+- API Key: Required
+- Description: Cloud platform for deploying and serving models
+- Website: https://lepton.ai/
+- Models: Custom deployments
+
+**Replicate**
+- URL: `https://api.replicate.com/v1`
+- API Key: Required
+- Description: Hosted ML models with simple API
+- Website: https://replicate.com/
+- Models: Various ML models including LLMs
+
+### Configuration Examples
+
+#### LocalAI Setup
+
+```json
+{
+  "name": "LocalAI",
+  "provider_type": "openai_compatible",
+  "base_url": "http://localhost:8080/v1",
+  "model_name": "llama-2-7b",
+  "is_active": true,
+  "is_default": false,
+  "config": {
+    "temperature": 0.7,
+    "max_tokens": 4096
+  }
+}
+```
+
+#### Together AI Setup
+
+```json
+{
+  "name": "Together AI",
+  "provider_type": "openai_compatible",
+  "base_url": "https://api.together.xyz/v1",
+  "api_key": "your-together-api-key",
+  "model_name": "togethercomputer/llama-2-70b-chat",
+  "is_active": true,
+  "is_default": false,
+  "config": {
+    "temperature": 0.7,
+    "max_tokens": 4096,
+    "pricing": {
+      "input": 0.0009,
+      "output": 0.0009
+    }
+  }
+}
+```
+
+#### Groq Setup
+
+```json
+{
+  "name": "Groq",
+  "provider_type": "openai_compatible",
+  "base_url": "https://api.groq.com/openai/v1",
+  "api_key": "your-groq-api-key",
+  "model_name": "llama3-70b-8192",
+  "is_active": true,
+  "is_default": false,
+  "config": {
+    "temperature": 0.7,
+    "max_tokens": 4096
+  }
+}
+```
+
+#### Anyscale Endpoints Setup
+
+```json
+{
+  "name": "Anyscale Endpoints",
+  "provider_type": "openai_compatible",
+  "base_url": "https://api.endpoints.anyscale.com/v1",
+  "api_key": "your-anyscale-api-key",
+  "model_name": "meta-llama/Llama-2-7b-chat-hf",
+  "is_active": true,
+  "is_default": false,
+  "config": {
+    "temperature": 0.7,
+    "max_tokens": 4096
+  }
+}
+```
+
+### Benefits of OpenAI-Compatible Providers
+
+1. **Cost-Effective**: Many services offer lower prices than OpenAI
+2. **Model Variety**: Access to hundreds of open-source models
+3. **Privacy**: Self-hosted options keep data on-premises
+4. **Performance**: Specialized hardware (like Groq's LPU) for faster inference
+5. **Flexibility**: Choose the right model for your use case
+6. **No Vendor Lock-in**: Easy to switch between providers
+
+### Using the Frontend UI
+
+1. Navigate to Settings > LLM Providers
+2. Click "Add Provider"
+3. Select "OpenAI-Compatible" from the Quick Setup dropdown
+4. Choose a preset (LocalAI, Together AI, Groq, etc.) or enter custom URL
+5. Enter API key if required
+6. Configure model name and settings
+7. Click "Create Provider"
+8. Test the connection before using
+
 ## API Reference
 
 ### List Providers
@@ -405,13 +588,13 @@ response = httpx.post(
         "Content-Type": "application/json"
     },
     json={
-        "name": "OpenAI",
-        "provider_type": "openai",
-        "base_url": "https://api.openai.com/v1",
-        "api_key": "sk-...",
-        "model_name": "gpt-4",
+        "name": "Together AI",
+        "provider_type": "openai_compatible",
+        "base_url": "https://api.together.xyz/v1",
+        "api_key": "your-api-key",
+        "model_name": "togethercomputer/llama-2-70b-chat",
         "is_active": True,
-        "is_default": True
+        "is_default": False
     }
 )
 
@@ -443,11 +626,11 @@ client = create_llm_client(timeout=60.0, max_retries=3)
 # Register provider
 provider = LLMProvider(
     id="provider-id",
-    name="OpenAI",
-    provider_type="openai",
-    base_url="https://api.openai.com/v1",
-    api_key="encrypted-key",
-    model_name="gpt-4",
+    name="Together AI",
+    provider_type="openai_compatible",
+    base_url="https://api.together.xyz/v1",
+    api_key="decrypted-key",
+    model_name="togethercomputer/llama-2-70b-chat",
     is_active=True,
     config={"temperature": 0.7}
 )
@@ -490,7 +673,7 @@ cost = client.estimate_cost(
     provider_id="provider-id",
     input_tokens=1000,
     output_tokens=500,
-    model="gpt-4"
+    model="togethercomputer/llama-2-70b-chat"
 )
 print(f"Estimated cost: ${cost}")
 ```
@@ -514,9 +697,24 @@ print(f"Estimated cost: ${cost}")
 | claude-3-sonnet | $0.003 | $0.015 |
 | claude-3-haiku | $0.00025 | $0.00125 |
 
+### OpenAI-Compatible Services Pricing (per 1K tokens)
+
+| Service | Model | Input | Output |
+|---------|-------|-------|--------|
+| Together AI | Llama-2-70B | $0.0009 | $0.0009 |
+| Together AI | Mixtral-8x7B | $0.0009 | $0.0009 |
+| Anyscale | Llama-2-7B | $0.0001 | $0.0001 |
+| Anyscale | Llama-2-70B | $0.0010 | $0.0010 |
+| Groq | Llama-3-70B | $0.00059 | $0.00079 |
+| Groq | Mixtral-8x7B | $0.00024 | $0.00024 |
+| DeepInfra | Llama-2-7B | $0.0001 | $0.0001 |
+| DeepInfra | Llama-2-70B | $0.0007 | $0.0007 |
+
+*Note: Pricing is approximate and subject to change. Check provider websites for current rates.*
+
 ### Local Providers
 
-Ollama, LM Studio, and vLLM are **free** when running locally.
+Ollama, LM Studio, vLLM, and LocalAI are **free** when running locally (your hardware costs only).
 
 ## Local LLM Deployment
 
@@ -571,6 +769,26 @@ curl http://localhost:8000/v1/completions \
     "model": "mistralai/Mistral-7B-Instruct-v0.2",
     "prompt": "Hello!",
     "max_tokens": 100
+  }'
+```
+
+### LocalAI Quick Start
+
+```bash
+# Using Docker
+docker run -p 8080:8080 localai/localai:latest
+
+# Or with docker-compose
+git clone https://github.com/mudler/LocalAI.git
+cd LocalAI
+docker-compose up -d
+
+# Test
+curl http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama-2-7b",
+    "messages": [{"role": "user", "content": "Hello!"}]
   }'
 ```
 
@@ -640,6 +858,18 @@ HTTP 404: Provider not found
 - Verify provider ID is correct
 - Check provider exists: `GET /api/v1/llm-providers`
 
+**6. OpenAI-Compatible Connection Failed**
+
+```
+AuthenticationError: Invalid or missing API key
+```
+
+**Solution:**
+- Check if the service requires an API key
+- Some services need keys even for local deployments
+- Verify the base URL is correct (should end with /v1)
+- Test the endpoint directly with curl
+
 ### Debug Mode
 
 Enable debug logging:
@@ -661,3 +891,4 @@ For additional help:
 2. Review error logs in `logs/app.log`
 3. Test connection using the test endpoint
 4. Verify environment variables are set correctly
+5. For OpenAI-Compatible providers, test the endpoint directly with curl to verify it's working

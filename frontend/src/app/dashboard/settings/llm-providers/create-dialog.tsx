@@ -32,7 +32,15 @@ import type { LLMProvider, LLMProviderCreate, ProviderType } from "@/types"
 
 const providerSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
-  provider_type: z.enum(["openai", "anthropic", "ollama", "lm_studio", "vllm", "custom"]),
+  provider_type: z.enum([
+    "openai",
+    "anthropic",
+    "ollama",
+    "lm_studio",
+    "vllm",
+    "openai_compatible",
+    "custom",
+  ]),
   base_url: z.string().url("Must be a valid URL"),
   model_name: z.string().min(1, "Model name is required"),
   api_key: z.string().optional(),
@@ -55,6 +63,7 @@ const PRESET_PROVIDERS: Array<{
   baseUrl: string
   defaultModel: string
   requiresApiKey: boolean
+  description?: string
 }> = [
   {
     value: "openai",
@@ -92,11 +101,84 @@ const PRESET_PROVIDERS: Array<{
     requiresApiKey: false,
   },
   {
+    value: "openai_compatible",
+    label: "OpenAI-Compatible",
+    baseUrl: "",
+    defaultModel: "",
+    requiresApiKey: false,
+    description: "Custom OpenAI-compatible APIs (LocalAI, FastChat, Together AI, Anyscale, etc.)",
+  },
+  {
     value: "custom",
     label: "Custom",
     baseUrl: "",
     defaultModel: "",
     requiresApiKey: false,
+  },
+]
+
+const COMPATIBLE_PRESETS: Array<{
+  name: string
+  baseUrl: string
+  defaultModel: string
+  requiresApiKey: boolean
+  description: string
+}> = [
+  {
+    name: "LocalAI",
+    baseUrl: "http://localhost:8080/v1",
+    defaultModel: "",
+    requiresApiKey: false,
+    description: "Self-hosted LocalAI instance",
+  },
+  {
+    name: "FastChat",
+    baseUrl: "http://localhost:8000/v1",
+    defaultModel: "",
+    requiresApiKey: false,
+    description: "FastChat local server",
+  },
+  {
+    name: "Together AI",
+    baseUrl: "https://api.together.xyz/v1",
+    defaultModel: "",
+    requiresApiKey: true,
+    description: "Cloud hosted open-source models",
+  },
+  {
+    name: "Anyscale Endpoints",
+    baseUrl: "https://api.endpoints.anyscale.com/v1",
+    defaultModel: "",
+    requiresApiKey: true,
+    description: "Ray-powered model serving",
+  },
+  {
+    name: "Groq",
+    baseUrl: "https://api.groq.com/openai/v1",
+    defaultModel: "",
+    requiresApiKey: true,
+    description: "Ultra-fast LPU inference",
+  },
+  {
+    name: "DeepInfra",
+    baseUrl: "https://api.deepinfra.com/v1",
+    defaultModel: "",
+    requiresApiKey: true,
+    description: "Serverless model inference",
+  },
+  {
+    name: "Lepton AI",
+    baseUrl: "https://<workspace>.lepton.run/api/v1",
+    defaultModel: "",
+    requiresApiKey: true,
+    description: "Lepton AI cloud platform",
+  },
+  {
+    name: "Custom",
+    baseUrl: "",
+    defaultModel: "",
+    requiresApiKey: false,
+    description: "Enter custom URL",
   },
 ]
 
@@ -116,6 +198,7 @@ export function CreateProviderDialog({
   const [showApiKey, setShowApiKey] = useState(false)
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null)
+  const [compatiblePreset, setCompatiblePreset] = useState<string>("")
 
   const {
     register,
@@ -146,6 +229,7 @@ export function CreateProviderDialog({
 
   const providerType = watch("provider_type")
   const requiresApiKey = PRESET_PROVIDERS.find((p) => p.value === providerType)?.requiresApiKey
+  const isCompatibleProvider = providerType === "openai_compatible"
 
   useEffect(() => {
     if (editingProvider) {
@@ -182,6 +266,7 @@ export function CreateProviderDialog({
           presence_penalty: 0,
         },
       })
+      setCompatiblePreset("")
     }
   }, [editingProvider, open, reset])
 
@@ -191,6 +276,18 @@ export function CreateProviderDialog({
       setValue("provider_type", value)
       setValue("base_url", preset.baseUrl)
       setValue("model_name", preset.defaultModel)
+    }
+  }
+
+  const handleCompatiblePresetChange = (presetName: string) => {
+    setCompatiblePreset(presetName)
+    const preset = COMPATIBLE_PRESETS.find((p) => p.name === presetName)
+    if (preset) {
+      setValue("base_url", preset.baseUrl)
+      setValue("model_name", preset.defaultModel)
+      if (!preset.requiresApiKey) {
+        setValue("api_key", "")
+      }
     }
   }
 
@@ -304,7 +401,36 @@ export function CreateProviderDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {PRESET_PROVIDERS.find((p) => p.value === providerType)?.description && (
+                <p className="text-xs text-muted-foreground">
+                  {PRESET_PROVIDERS.find((p) => p.value === providerType)?.description}
+                </p>
+              )}
             </div>
+
+            {/* OpenAI-Compatible Presets */}
+            {isCompatibleProvider && (
+              <div className="space-y-2 rounded-lg border p-4 bg-muted/50">
+                <Label>OpenAI-Compatible Service Preset</Label>
+                <Select value={compatiblePreset} onValueChange={handleCompatiblePresetChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a compatible service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COMPATIBLE_PRESETS.map((preset) => (
+                      <SelectItem key={preset.name} value={preset.name}>
+                        {preset.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {compatiblePreset && (
+                  <p className="text-xs text-muted-foreground">
+                    {COMPATIBLE_PRESETS.find((p) => p.name === compatiblePreset)?.description}
+                  </p>
+                )}
+              </div>
+            )}
 
             <Tabs defaultValue="basic">
               <TabsList className="grid w-full grid-cols-3">
@@ -336,6 +462,11 @@ export function CreateProviderDialog({
                   {errors.base_url && (
                     <p className="text-sm text-destructive">{errors.base_url.message}</p>
                   )}
+                  {isCompatibleProvider && (
+                    <p className="text-xs text-muted-foreground">
+                      Enter the base URL of your OpenAI-compatible API endpoint.
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -348,37 +479,42 @@ export function CreateProviderDialog({
                   {errors.model_name && (
                     <p className="text-sm text-destructive">{errors.model_name.message}</p>
                   )}
+                  {isCompatibleProvider && (
+                    <p className="text-xs text-muted-foreground">
+                      Enter the model name supported by your compatible API.
+                    </p>
+                  )}
                 </div>
 
-                {requiresApiKey && (
-                  <div className="space-y-2">
-                    <Label htmlFor="api_key">API Key</Label>
-                    <div className="relative">
-                      <Input
-                        id="api_key"
-                        type={showApiKey ? "text" : "password"}
-                        placeholder="sk-..."
-                        {...register("api_key")}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3"
-                        onClick={() => setShowApiKey(!showApiKey)}
-                      >
-                        {showApiKey ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Your API key will be encrypted and stored securely.
-                    </p>
+                <div className="space-y-2">
+                  <Label htmlFor="api_key">API Key (Optional)</Label>
+                  <div className="relative">
+                    <Input
+                      id="api_key"
+                      type={showApiKey ? "text" : "password"}
+                      placeholder={requiresApiKey ? "sk-..." : "Optional for some providers"}
+                      {...register("api_key")}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowApiKey(!showApiKey)}
+                    >
+                      {showApiKey ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
-                )}
+                  <p className="text-xs text-muted-foreground">
+                    {requiresApiKey
+                      ? "Your API key will be encrypted and stored securely."
+                      : "Some OpenAI-compatible services don't require an API key. Leave empty if not needed."}
+                  </p>
+                </div>
               </TabsContent>
 
               <TabsContent value="config" className="space-y-4">
