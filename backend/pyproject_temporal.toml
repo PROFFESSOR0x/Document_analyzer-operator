@@ -1,0 +1,4 @@
+[tool.poetry.dependencies]
+# Add to existing dependencies in pyproject.toml
+temporalio = "^1.4.0"
+croniter = "^2.0.0"
