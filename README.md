@@ -70,8 +70,8 @@ The **Document-Analyzer-Operator Platform** is a large-scale autonomous agent ec
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Tool Capability Layer                        │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │
-│  │   Web    │  │ Document │  │    AI    │  │Automation│       │
-│  │  Tools   │  │  Tools   │  │  Tools   │  │  Tools   │       │
+│  │   Web    │  └──────────┘  └──────────┘  └──────────┘       │
+│  │  Tools   │  └──────────┘  └──────────┘  └──────────┘       │
 │  └──────────┘  └──────────┘  └──────────┘  └──────────┘       │
 │  ┌──────────────────────────────────────────────────┐           │
 │  │              Data Tools & Utilities              │           │
@@ -99,55 +99,92 @@ The **Document-Analyzer-Operator Platform** is a large-scale autonomous agent ec
 ```
 Document_analyzer-operator/
 ├── README.md                         # Main documentation
+├── setup.sh / setup.bat              # Native setup scripts
+├── start.sh / start.bat              # Native start scripts
+├── stop.sh / stop.bat                # Native stop scripts
 ├── docker-compose.yml                # Full stack orchestration
 ├── docs/                             # 📚 All documentation
 │   ├── README.md                     # Documentation index
+│   ├── NATIVE_SETUP.md               # Native (non-Docker) setup guide
 │   ├── LLM_SETUP_GUIDE.md
-│   ├── OPENAI_COMPATIBLE_GUIDE.md
-│   ├── IMPLEMENTATION_SUMMARY.md
-│   ├── LLM_IMPLEMENTATION_SUMMARY.md
-│   ├── OPENAI_COMPATIBLE_IMPLEMENTATION.md
-│   └── VALIDATION_REPORT.md
+│   └── ...
+├── scripts/                          # 🔧 Setup and utility scripts
+│   ├── install_prerequisites.sh/bat  # Install system dependencies
+│   └── systemd/                      # Linux systemd service files
 ├── backend/                          # Python FastAPI Backend
-│   ├── app/
-│   │   ├── agents/                   # 24 agents in 6 categories
-│   │   ├── tools/                    # 20+ tools in 5 categories
-│   │   ├── knowledge/                # Knowledge infrastructure
-│   │   ├── workflow/                 # Workflow engine
-│   │   ├── api/v1/routes/            # REST API endpoints
-│   │   ├── models/                   # SQLAlchemy models
-│   │   ├── schemas/                  # Pydantic schemas
-│   │   ├── services/                 # Business logic
-│   │   │   ├── llm_client.py         # Unified LLM client
-│   │   │   └── llm_provider_service.py # LLM provider management
-│   │   └── core/                     # Core utilities
-│   ├── docs/                         # Backend documentation
-│   │   └── LLM_PROVIDERS.md
-│   ├── tests/                        # Test suites
-│   ├── alembic/                      # Database migrations
-│   └── Documentation (8 MD files)
+│   ├── setup_native.sh/bat           # Backend native setup
+│   ├── run_native.sh/bat             # Backend native run
+│   ├── ecosystem.config.js           # PM2 configuration
+│   ├── app/                          # Application code
+│   ├── scripts/                      # Database and service scripts
+│   └── ...
 └── frontend/                         # Next.js 14 Frontend
-    ├── src/
-    │   ├── app/                      # 13 pages
-    │   ├── components/               # 38 components
-    │   ├── lib/                      # Utilities
-    │   ├── stores/                   # Zustand stores
-    │   ├── hooks/                    # React Query hooks
-    │   └── providers/                # Context providers
-    └── Documentation (5 MD files)
+    ├── setup_native.sh/bat           # Frontend native setup
+    ├── run_native.sh/bat             # Frontend native run
+    ├── ecosystem.config.js           # PM2 configuration
+    └── ...
 ```
 
 ---
 
 ## 🚀 Quick Start
 
+### Choose Your Setup Method
+
+#### Option A: Docker Setup (Recommended for most users)
+
+```bash
+# Start all services with Docker
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+#### Option B: Native Setup (No Docker required)
+
+**Windows:**
+```powershell
+# 1. Install prerequisites
+cd scripts
+.\install_prerequisites.bat
+
+# 2. Setup application
+cd ..
+.\setup.bat
+
+# 3. Start all services
+.\start.bat
+```
+
+**macOS/Linux:**
+```bash
+# 1. Install prerequisites
+cd scripts
+chmod +x install_prerequisites.sh
+./install_prerequisites.sh
+
+# 2. Setup application
+cd ..
+chmod +x setup.sh
+./setup.sh
+
+# 3. Start all services
+./start.sh
+```
+
+📖 **Detailed Native Setup Guide**: [docs/NATIVE_SETUP.md](docs/NATIVE_SETUP.md)
+
+---
+
 ### Prerequisites
 
-- **Python**: 3.11+
-- **Node.js**: 18+
-- **Docker**: 20+ with Docker Compose
-- **PostgreSQL**: 16+ (or use Docker)
-- **Redis**: 7+ (or use Docker)
+| Method | Requirements |
+|--------|-------------|
+| **Docker** | Docker 20+, Docker Compose |
+| **Native** | Python 3.11+, Node.js 18+, PostgreSQL 16+, Redis 7+ |
+
+---
 
 ### 1. Clone and Setup
 
@@ -155,15 +192,31 @@ Document_analyzer-operator/
 cd "D:\Computer-Science\Artificial-Intelligence\AI-programing\Document_analyzer-operator"
 ```
 
-### 2. Start Infrastructure (Docker)
+### 2. Backend Setup
 
+#### Docker Mode
 ```bash
-# Start PostgreSQL, Redis, and Temporal
+# Infrastructure is managed by docker-compose
 docker-compose up -d postgres redis temporal
 ```
 
-### 3. Backend Setup
+#### Native Mode
+```bash
+cd backend
 
+# Run native setup
+./setup_native.sh          # Linux/Mac
+.\setup_native.bat         # Windows
+
+# This will:
+# - Install Poetry and dependencies
+# - Create virtual environment
+# - Setup .env file with secure keys
+# - Run database migrations
+# - Verify installation
+```
+
+**Manual Backend Setup:**
 ```bash
 cd backend
 
@@ -186,8 +239,24 @@ poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 **Backend API Docs**: http://localhost:8000/docs
 
-### 4. Frontend Setup
+### 3. Frontend Setup
 
+#### Native Mode
+```bash
+cd frontend
+
+# Run native setup
+./setup_native.sh          # Linux/Mac
+.\setup_native.bat         # Windows
+
+# This will:
+# - Check Node.js installation
+# - Install npm dependencies
+# - Setup .env.local file
+# - Verify installation
+```
+
+**Manual Frontend Setup:**
 ```bash
 cd frontend
 
@@ -207,7 +276,7 @@ npm run dev
 
 **Frontend Dashboard**: http://localhost:3000
 
-### 5. Configure LLM Providers
+### 4. Configure LLM Providers
 
 #### Option A: Via Dashboard
 1. Go to: http://localhost:3000/dashboard/settings/llm-providers
@@ -306,7 +375,7 @@ The platform now supports 10+ LLM providers including:
 | **OpenAI** | Cloud | Required | $$$ | ⚡⚡⚡ | Production quality |
 | **Anthropic** | Cloud | Required | $$ | ⚡⚡⚡ | Long context |
 | **Together AI** | Cloud | Required | $ | ⚡⚡⚡ | Open-source models |
-| **Anyscale** | Cloud | Required | $ | ⚡⚡⚡ | Enterprise apps |
+| **Anyscale** | Cloud | Required | $ | ⚡⚡ | Enterprise apps |
 | **DeepInfra** | Cloud | Required | ¢ | ⚡⚡ | Cost-sensitive |
 | **Ollama** | Local | Optional | Free | ⚡⚡ | Development |
 | **LM Studio** | Local | Optional | Free | ⚡⚡ | Desktop testing |
@@ -510,38 +579,42 @@ WS     /api/v1/ws                        # Real-time events
 
 ## 📚 Documentation
 
-### Main Documentation Hub
-📁 **Complete Documentation Index**: [docs/README.md](docs/README.md)
+### 📁 Main Documentation Hub
+**Complete Documentation Index**: [docs/README.md](docs/README.md) - 21 comprehensive guides!
 
-### Backend Documentation
-- **[ARCHITECTURE.md](backend/ARCHITECTURE.md)**: Complete system architecture
-- **[AGENT_FRAMEWORK.md](backend/AGENT_FRAMEWORK.md)**: Agent framework documentation
-- **[WORKFLOW_ENGINE.md](backend/WORKFLOW_ENGINE.md)**: Workflow engine guide
-- **[TOOLS_AND_KNOWLEDGE.md](backend/TOOLS_AND_KNOWLEDGE.md)**: Tools and knowledge infrastructure
-- **[WORKFLOW_EXAMPLES.md](backend/WORKFLOW_EXAMPLES.md)**: Workflow usage examples
-- **[IMPLEMENTATION_SUMMARY.md](backend/IMPLEMENTATION_SUMMARY.md)**: Backend implementation summary
-- **[TEMPORAL_SETUP.md](backend/TEMPORAL_SETUP.md)**: Temporal workflow setup guide
-- **[LLM_PROVIDERS.md](backend/docs/LLM_PROVIDERS.md)**: LLM provider details
+### 🚀 Quick Start Guides
+- **[docs/QUICKSTART.md](docs/QUICKSTART.md)** - Quick reference card
+- **[docs/ZERO_CONFIG_SETUP.md](docs/ZERO_CONFIG_SETUP.md)** - ⭐ Automated setup (no .env editing!)
+- **[docs/WINDOWS_SETUP_QUICK.md](docs/WINDOWS_SETUP_QUICK.md)** - Windows PowerShell setup
+- **[docs/NATIVE_SETUP.md](docs/NATIVE_SETUP.md)** - Native setup (No Docker)
 
-### LLM Documentation
-- **[LLM_SETUP_GUIDE.md](docs/LLM_SETUP_GUIDE.md)**: Complete LLM provider setup guide
-- **[OPENAI_COMPATIBLE_GUIDE.md](docs/OPENAI_COMPATIBLE_GUIDE.md)**: OpenAI-compatible providers (Groq, Together AI, etc.)
-- **[LLM_IMPLEMENTATION_SUMMARY.md](docs/LLM_IMPLEMENTATION_SUMMARY.md)**: LLM provider implementation details
-- **[OPENAI_COMPATIBLE_IMPLEMENTATION.md](docs/OPENAI_COMPATIBLE_IMPLEMENTATION.md)**: OpenAI-compatible provider implementation
+### 🧠 LLM Providers
+- **[docs/LLM_SETUP_GUIDE.md](docs/LLM_SETUP_GUIDE.md)** - Complete LLM provider setup
+- **[docs/OPENAI_COMPATIBLE_GUIDE.md](docs/OPENAI_COMPATIBLE_GUIDE.md)** - OpenAI-compatible providers (Groq, Together AI, etc.)
+- **[docs/LLM_IMPLEMENTATION_SUMMARY.md](docs/LLM_IMPLEMENTATION_SUMMARY.md)** - LLM implementation details
+- **[docs/OPENAI_COMPATIBLE_IMPLEMENTATION.md](docs/OPENAI_COMPATIBLE_IMPLEMENTATION.md)** - OpenAI-compatible implementation
 
-### Frontend Documentation
-- **[README.md](frontend/README.md)**: Frontend overview
-- **[ARCHITECTURE.md](frontend/ARCHITECTURE.md)**: Frontend architecture
-- **[COMPONENT_USAGE.md](frontend/COMPONENT_USAGE.md)**: Component usage guide
-- **[IMPLEMENTATION_SUMMARY.md](frontend/IMPLEMENTATION_SUMMARY.md)**: Frontend implementation summary
+### ⚙️ Settings Management
+- **[docs/SETTINGS_QUICKSTART.md](docs/SETTINGS_QUICKSTART.md)** - UI-based settings management
+- **[docs/SETTINGS_IMPLEMENTATION_SUMMARY.md](docs/SETTINGS_IMPLEMENTATION_SUMMARY.md)** - Settings implementation
 
-### Quality & Testing
-- **[VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)**: Code validation and quality report
-- **[IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)**: General implementation summary
+### 🏗️ Architecture & Design
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Complete system architecture
+- **[docs/AGENT_FRAMEWORK.md](docs/AGENT_FRAMEWORK.md)** - Agent framework documentation
+- **[docs/WORKFLOW_ENGINE.md](docs/WORKFLOW_ENGINE.md)** - Workflow engine guide
 
-### API Documentation
-- **Interactive API Docs**: http://localhost:8000/docs (when backend is running)
-- **API Reference**: See [API Endpoints](#-api-endpoints) section below
+### 📦 Implementation
+- **[docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)** - Complete implementation summary
+- **[docs/AUTO_SETUP_SUMMARY.md](docs/AUTO_SETUP_SUMMARY.md)** - Automated setup implementation
+- **[docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)** - Code validation report
+
+### 🔧 Technical Reference
+- **[docs/TOOLS_AND_KNOWLEDGE.md](docs/TOOLS_AND_KNOWLEDGE.md)** - Tools and knowledge infrastructure
+- **[docs/API.md](docs/API.md)** - API reference documentation
+
+### 🎮 Interactive Documentation
+- **API Docs**: http://localhost:8000/docs (when backend is running)
+- **Frontend**: http://localhost:3000/dashboard/settings/management (admin only)
 
 ---
 
@@ -641,6 +714,47 @@ docker-compose logs -f
 docker-compose down
 ```
 
+### Native Deployment
+
+#### Development
+```bash
+# Start all services
+./start.sh          # Linux/Mac
+start.bat           # Windows
+
+# Stop all services
+./stop.sh           # Linux/Mac
+stop.bat            # Windows
+```
+
+#### Production (Linux with systemd)
+```bash
+# Install systemd services
+sudo cp scripts/systemd/*.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable document-analyzer-backend
+sudo systemctl enable document-analyzer-frontend
+sudo systemctl start document-analyzer-backend
+sudo systemctl start document-analyzer-frontend
+```
+
+#### Production (PM2)
+```bash
+# Install PM2
+npm install -g pm2
+
+# Start services
+cd backend
+pm2 start ecosystem.config.js
+
+cd ../frontend
+pm2 start ecosystem.config.js
+
+# Save PM2 configuration
+pm2 save
+pm2 startup
+```
+
 ### Production Considerations
 
 1. **Environment Variables**: Set production values for all secrets
@@ -682,6 +796,7 @@ docker-compose down
 
 ### Infrastructure
 - **Containerization**: Docker + Docker Compose
+- **Native Deployment**: systemd, PM2
 - **Orchestration**: Kubernetes (production)
 - **Load Balancer**: NGINX/HAProxy
 - **Monitoring**: Prometheus + Grafana
@@ -710,11 +825,16 @@ docker-compose down
 
 ## 📞 Support
 
-For questions and support:
-- **Documentation**: Check [docs/README.md](docs/README.md)
-- **API Docs**: http://localhost:8000/docs
+### Documentation
+- **Complete Index**: [docs/README.md](docs/README.md) - 21 guides available!
+- **Quick Start**: [docs/ZERO_CONFIG_SETUP.md](docs/ZERO_CONFIG_SETUP.md)
+- **Windows Users**: [docs/WINDOWS_SETUP_QUICK.md](docs/WINDOWS_SETUP_QUICK.md)
+- **API Reference**: [docs/API.md](docs/API.md) or http://localhost:8000/docs
+
+### Help & Community
 - **Issues**: Open an issue on GitHub
 - **Discussions**: GitHub Discussions
+- **Setup Help**: See [docs/NATIVE_SETUP.md](docs/NATIVE_SETUP.md)
 
 ---
 
@@ -737,5 +857,8 @@ Built with:
 
 **Version**: 1.0.0  
 **Last Updated**: 2026-03-13  
-**Status**: Production Ready  
-**Supported Providers**: 10+ LLM providers (OpenAI, Anthropic, Groq, Together AI, Ollama, etc.)
+**Status**: ✅ Production Ready  
+**Supported Providers**: 10+ LLM providers (OpenAI, Anthropic, Groq, Together AI, Ollama, etc.)  
+**Deployment Options**: Docker, Native (Windows/Mac/Linux)  
+**Documentation**: 21 comprehensive guides in [docs/](docs/)  
+**Setup Time**: 2-5 minutes (automated)

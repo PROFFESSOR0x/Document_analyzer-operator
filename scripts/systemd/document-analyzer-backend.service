@@ -1,0 +1,49 @@
+[Unit]
+Description=Document Analyzer Operator - Backend API
+Documentation=https://github.com/your-org/document-analyzer-operator
+After=network.target postgresql.service redis.service
+Wants=postgresql.service redis.service
+
+[Service]
+Type=notify
+User=document-analyzer
+Group=document-analyzer
+
+# Working directory
+WorkingDirectory=/opt/document-analyzer-operator/backend
+
+# Environment
+Environment="PATH=/opt/document-analyzer-operator/backend/.venv/bin"
+EnvironmentFile=/opt/document-analyzer-operator/backend/.env
+
+# Process management
+ExecStart=/opt/document-analyzer-operator/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Timeout settings
+TimeoutStartSec=30
+TimeoutStopSec=30
+
+# Resource limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/document-analyzer-operator/logs /opt/document-analyzer-operator/uploads /opt/document-analyzer-operator/storage
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=document-analyzer-backend
+
+[Install]
+WantedBy=multi-user.target

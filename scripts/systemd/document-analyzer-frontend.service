@@ -1,0 +1,50 @@
+[Unit]
+Description=Document Analyzer Operator - Frontend
+Documentation=https://github.com/your-org/document-analyzer-operator
+After=network.target document-analyzer-backend.service
+Wants=document-analyzer-backend.service
+
+[Service]
+Type=notify
+User=document-analyzer
+Group=document-analyzer
+
+# Working directory
+WorkingDirectory=/opt/document-analyzer-operator/frontend
+
+# Environment
+Environment="NODE_ENV=production"
+Environment="PORT=3000"
+EnvironmentFile=/opt/document-analyzer-operator/frontend/.env.local
+
+# Process management
+ExecStart=/usr/bin/npm run start
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Timeout settings
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Resource limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/document-analyzer-operator/frontend/.next
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=document-analyzer-frontend
+
+[Install]
+WantedBy=multi-user.target

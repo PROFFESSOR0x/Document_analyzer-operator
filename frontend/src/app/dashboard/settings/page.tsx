@@ -23,6 +23,8 @@ import {
   Plug,
   Cpu,
   ArrowRight,
+  Settings,
+  Shield,
 } from "lucide-react"
 import { useState } from "react"
 import { useTheme } from "next-themes"
@@ -50,6 +52,8 @@ export default function SettingsPage() {
   const handleCreateApiKey = () => {
     toast.success("API key created (mock)")
   }
+
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin"
 
   return (
     <DashboardLayout>
@@ -263,6 +267,42 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Application Settings Card - Admin Only */}
+            {isAdmin && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    Application Settings
+                  </CardTitle>
+                  <CardDescription>
+                    Manage all application configuration and environment variables
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between rounded-lg border p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                        <Settings className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Settings Management</p>
+                        <p className="text-sm text-muted-foreground">
+                          Configure LLM, database, security, and UI settings
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/dashboard/settings/management">
+                        Manage
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="integrations" className="space-y-4">

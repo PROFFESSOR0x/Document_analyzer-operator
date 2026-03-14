@@ -26,6 +26,12 @@ from app.services.llm_client import (
     TimeoutError,
     ProviderError,
 )
+from app.services.settings_service import (
+    SettingsService,
+    get_settings_service,
+    SettingsEncryptionError,
+    SettingsValidationError,
+)
 
 __all__ = [
     # Agent & User Services
@@ -56,4 +62,9 @@ __all__ = [
     "RateLimitError",
     "TimeoutError",
     "ProviderError",
+    # Settings Service
+    "SettingsService",
+    "get_settings_service",
+    "SettingsEncryptionError",
+    "SettingsValidationError",
 ]

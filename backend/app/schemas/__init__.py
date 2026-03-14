@@ -37,6 +37,19 @@ from app.schemas.llm_provider import (
     LLMUsageStats,
     LLMUsageStatsRequest,
 )
+from app.schemas.application_setting import (
+    ApplicationSettingBase,
+    ApplicationSettingCreate,
+    ApplicationSettingUpdate,
+    ApplicationSettingResponse,
+    ApplicationSettingList,
+    SettingCategoryResponse,
+    SettingAuditLogResponse,
+    SettingAuditLogList,
+    BulkSettingsUpdate,
+    SettingsExport,
+    SettingsImport,
+)
 
 __all__ = [
     # Agent
@@ -73,4 +86,16 @@ __all__ = [
     "LLMUsageLogList",
     "LLMUsageStats",
     "LLMUsageStatsRequest",
+    # Application Settings
+    "ApplicationSettingBase",
+    "ApplicationSettingCreate",
+    "ApplicationSettingUpdate",
+    "ApplicationSettingResponse",
+    "ApplicationSettingList",
+    "SettingCategoryResponse",
+    "SettingAuditLogResponse",
+    "SettingAuditLogList",
+    "BulkSettingsUpdate",
+    "SettingsExport",
+    "SettingsImport",
 ]

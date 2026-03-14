@@ -6,6 +6,8 @@ from app.models.agent_session import AgentSession
 from app.models.agent_metric import AgentMetric
 from app.models.llm_provider import LLMProvider, ProviderType
 from app.models.llm_usage import LLMUsageLog
+from app.models.application_setting import ApplicationSetting, SettingValueType
+from app.models.setting_audit_log import SettingAuditLog
 
 __all__ = [
     "Agent",
@@ -15,4 +17,7 @@ __all__ = [
     "LLMProvider",
     "ProviderType",
     "LLMUsageLog",
+    "ApplicationSetting",
+    "SettingValueType",
+    "SettingAuditLog",
 ]

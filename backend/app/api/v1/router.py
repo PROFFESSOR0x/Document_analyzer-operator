@@ -10,6 +10,7 @@ from app.api.v1.routes import (
     tools,
     knowledge,
     llm_providers,
+    settings,
 )
 
 api_router = APIRouter()
@@ -37,4 +38,9 @@ api_router.include_router(
     llm_providers.router,
     prefix="/llm-providers",
     tags=["LLM Providers"],
+)
+api_router.include_router(
+    settings.router,
+    prefix="/settings",
+    tags=["Settings"],
 )
