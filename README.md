@@ -98,32 +98,38 @@ The **Document-Analyzer-Operator Platform** is a large-scale autonomous agent ec
 
 ```
 Document_analyzer-operator/
-├── README.md                         # Main documentation
-├── setup.sh / setup.bat              # Native setup scripts
-├── start.sh / start.bat              # Native start scripts
-├── stop.sh / stop.bat                # Native stop scripts
-├── docker-compose.yml                # Full stack orchestration
-├── docs/                             # 📚 All documentation
-│   ├── README.md                     # Documentation index
-│   ├── NATIVE_SETUP.md               # Native (non-Docker) setup guide
-│   ├── LLM_SETUP_GUIDE.md
-│   └── ...
-├── scripts/                          # 🔧 Setup and utility scripts
-│   ├── install_prerequisites.sh/bat  # Install system dependencies
-│   └── systemd/                      # Linux systemd service files
-├── backend/                          # Python FastAPI Backend
-│   ├── setup_native.sh/bat           # Backend native setup
-│   ├── run_native.sh/bat             # Backend native run
-│   ├── ecosystem.config.js           # PM2 configuration
-│   ├── app/                          # Application code
-│   ├── scripts/                      # Database and service scripts
-│   └── ...
-└── frontend/                         # Next.js 14 Frontend
-    ├── setup_native.sh/bat           # Frontend native setup
-    ├── run_native.sh/bat             # Frontend native run
-    ├── ecosystem.config.js           # PM2 configuration
-    └── ...
+├── README.md                    # Main documentation
+├── PROJECT_STRUCTURE.md         # Detailed project structure
+├── docker-compose.yml           # Docker orchestration
+├── setup.bat/sh                 # Main setup entry point
+├── start.bat/sh                 # Start backend
+├── start-frontend.bat/sh        # Start frontend
+├── clean.bat/sh                 # Cleanup utilities
+├── docs/                        # Documentation (22 files)
+│   ├── README.md               # Documentation index
+│   ├── getting-started/        # Setup guides (5)
+│   ├── user-guides/            # User guides (4)
+│   ├── architecture/           # Architecture docs (3)
+│   ├── implementation/         # Implementation docs (5)
+│   ├── technical/              # Technical docs (3)
+│   └── troubleshooting/        # Troubleshooting (1)
+├── scripts/                     # Automation scripts (18)
+│   ├── README.md               # Scripts usage guide
+│   ├── setup/                  # Setup scripts (7)
+│   ├── run/                    # Run scripts (6)
+│   └── maintenance/            # Maintenance scripts (5)
+├── backend/                     # Python FastAPI backend
+└── frontend/                    # Next.js React frontend
 ```
+
+For detailed information about the project structure, see [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md).
+
+### Quick Overview
+- **Root** - Entry points and main configuration
+- **docs/** - All documentation (22 files in 6 categories)
+- **scripts/** - Automation scripts (18 files in 3 categories)
+- **backend/** - Python FastAPI application
+- **frontend/** - Next.js React application
 
 ---
 
@@ -145,35 +151,51 @@ docker-compose logs -f
 
 **Windows:**
 ```powershell
-# 1. Install prerequisites
-cd scripts
-.\install_prerequisites.bat
+# 1. Setup application (automated)
+setup.bat
 
-# 2. Setup application
-cd ..
-.\setup.bat
+# 2. Start backend
+start.bat
 
-# 3. Start all services
-.\start.bat
+# 3. Start frontend (in new terminal)
+start-frontend.bat
 ```
 
 **macOS/Linux:**
 ```bash
-# 1. Install prerequisites
-cd scripts
-chmod +x install_prerequisites.sh
-./install_prerequisites.sh
-
-# 2. Setup application
-cd ..
+# 1. Setup application (automated)
 chmod +x setup.sh
 ./setup.sh
 
-# 3. Start all services
+# 2. Start backend
+chmod +x start.sh
 ./start.sh
+
+# 3. Start frontend (in new terminal)
+chmod +x start-frontend.sh
+./start-frontend.sh
 ```
 
-📖 **Detailed Native Setup Guide**: [docs/NATIVE_SETUP.md](docs/NATIVE_SETUP.md)
+**Quick Commands:**
+```bash
+# Setup
+setup.bat          # Windows
+./setup.sh         # Linux/Mac
+
+# Start backend
+start.bat          # Windows
+./start.sh         # Linux/Mac
+
+# Start frontend
+start-frontend.bat # Windows
+./start-frontend.sh # Linux/Mac
+
+# Cleanup
+clean.bat          # Windows
+./clean.sh         # Linux/Mac
+```
+
+📖 **Documentation**: [Documentation Index](docs/README.md) | **Scripts Guide**: [scripts/README.md](scripts/README.md)
 
 ---
 
@@ -298,6 +320,25 @@ curl -X POST http://localhost:8000/api/v1/llm-providers \
     "model_name": "mixtral-8x7b-32768"
   }'
 ```
+
+---
+
+## 🛠️ Available Scripts
+
+### Setup Scripts
+- `setup.bat/sh` - Main setup entry point
+- `scripts/setup/setup_auto.*` - Automated setup
+- `scripts/setup/quick_setup.*` - Interactive setup
+
+### Run Scripts
+- `start.bat/sh` - Start backend
+- `start-frontend.bat/sh` - Start frontend
+- `scripts/run/run_backend_poetry.bat` - Backend with Poetry
+
+### Maintenance Scripts
+- `clean.bat/sh` - Clean temporary files
+- `scripts/maintenance/fix_env.bat` - Fix .env issues
+- `scripts/maintenance/setup_fallback.bat` - Fallback setup
 
 ---
 
@@ -580,41 +621,38 @@ WS     /api/v1/ws                        # Real-time events
 ## 📚 Documentation
 
 ### 📁 Main Documentation Hub
-**Complete Documentation Index**: [docs/README.md](docs/README.md) - 21 comprehensive guides!
+**Complete Documentation Index**: [docs/README.md](docs/README.md) - 22 comprehensive guides!
 
-### 🚀 Quick Start Guides
-- **[docs/QUICKSTART.md](docs/QUICKSTART.md)** - Quick reference card
-- **[docs/ZERO_CONFIG_SETUP.md](docs/ZERO_CONFIG_SETUP.md)** - ⭐ Automated setup (no .env editing!)
-- **[docs/WINDOWS_SETUP_QUICK.md](docs/WINDOWS_SETUP_QUICK.md)** - Windows PowerShell setup
-- **[docs/NATIVE_SETUP.md](docs/NATIVE_SETUP.md)** - Native setup (No Docker)
+Documentation is organized into categories:
 
-### 🧠 LLM Providers
-- **[docs/LLM_SETUP_GUIDE.md](docs/LLM_SETUP_GUIDE.md)** - Complete LLM provider setup
-- **[docs/OPENAI_COMPATIBLE_GUIDE.md](docs/OPENAI_COMPATIBLE_GUIDE.md)** - OpenAI-compatible providers (Groq, Together AI, etc.)
-- **[docs/LLM_IMPLEMENTATION_SUMMARY.md](docs/LLM_IMPLEMENTATION_SUMMARY.md)** - LLM implementation details
-- **[docs/OPENAI_COMPATIBLE_IMPLEMENTATION.md](docs/OPENAI_COMPATIBLE_IMPLEMENTATION.md)** - OpenAI-compatible implementation
+#### 🚀 Getting Started (5 guides)
+- **[Zero-Config Setup](docs/getting-started/zero-config-setup.md)** - ⭐ Automated setup (no .env editing!)
+- **[Native Setup](docs/getting-started/native-setup.md)** - Native setup (No Docker)
+- **[Windows Setup](docs/getting-started/windows-setup.md)** - Windows PowerShell setup
 
-### ⚙️ Settings Management
-- **[docs/SETTINGS_QUICKSTART.md](docs/SETTINGS_QUICKSTART.md)** - UI-based settings management
-- **[docs/SETTINGS_IMPLEMENTATION_SUMMARY.md](docs/SETTINGS_IMPLEMENTATION_SUMMARY.md)** - Settings implementation
+#### 🧠 LLM Providers
+- **[LLM Providers](docs/user-guides/llm-providers.md)** - Complete LLM provider setup
+- **[Settings Management](docs/user-guides/settings-management.md)** - UI-based settings management
 
-### 🏗️ Architecture & Design
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Complete system architecture
-- **[docs/AGENT_FRAMEWORK.md](docs/AGENT_FRAMEWORK.md)** - Agent framework documentation
-- **[docs/WORKFLOW_ENGINE.md](docs/WORKFLOW_ENGINE.md)** - Workflow engine guide
+#### 🏗️ Architecture & Design
+- **[Architecture](docs/architecture/architecture.md)** - Complete system architecture
 
-### 📦 Implementation
-- **[docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)** - Complete implementation summary
-- **[docs/AUTO_SETUP_SUMMARY.md](docs/AUTO_SETUP_SUMMARY.md)** - Automated setup implementation
-- **[docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md)** - Code validation report
+#### 📦 Implementation
+- **[Implementation Summary](docs/implementation/implementation-summary.md)** - Complete implementation summary
 
-### 🔧 Technical Reference
-- **[docs/TOOLS_AND_KNOWLEDGE.md](docs/TOOLS_AND_KNOWLEDGE.md)** - Tools and knowledge infrastructure
-- **[docs/API.md](docs/API.md)** - API reference documentation
+#### 🔍 Troubleshooting
+- **[Troubleshooting](docs/troubleshooting/troubleshooting.md)** - Common issues and solutions
+
+### 📖 Additional Documentation
+- **[Project Structure](./PROJECT_STRUCTURE.md)** - Detailed directory structure
+- **[Scripts Guide](./scripts/README.md)** - Scripts usage guide
+- **Backend Docs**: [backend/README.md](backend/README.md)
+- **Frontend Docs**: [frontend/README.md](frontend/README.md)
 
 ### 🎮 Interactive Documentation
 - **API Docs**: http://localhost:8000/docs (when backend is running)
-- **Frontend**: http://localhost:3000/dashboard/settings/management (admin only)
+- **ReDoc**: http://localhost:8000/redoc (when backend is running)
+- **Frontend Dashboard**: http://localhost:3000 (when frontend is running)
 
 ---
 
@@ -722,9 +760,17 @@ docker-compose down
 ./start.sh          # Linux/Mac
 start.bat           # Windows
 
+# Start frontend (separate terminal)
+./start-frontend.sh # Linux/Mac
+start-frontend.bat  # Windows
+
 # Stop all services
-./stop.sh           # Linux/Mac
-stop.bat            # Windows
+scripts/maintenance/stop.sh     # Linux/Mac
+scripts\maintenance\stop.bat    # Windows
+
+# Cleanup temporary files
+./clean.sh          # Linux/Mac
+clean.bat           # Windows
 ```
 
 #### Production (Linux with systemd)
@@ -826,15 +872,15 @@ pm2 startup
 ## 📞 Support
 
 ### Documentation
-- **Complete Index**: [docs/README.md](docs/README.md) - 21 guides available!
-- **Quick Start**: [docs/ZERO_CONFIG_SETUP.md](docs/ZERO_CONFIG_SETUP.md)
-- **Windows Users**: [docs/WINDOWS_SETUP_QUICK.md](docs/WINDOWS_SETUP_QUICK.md)
-- **API Reference**: [docs/API.md](docs/API.md) or http://localhost:8000/docs
+- **Complete Index**: [docs/README.md](docs/README.md) - 22 guides!
+- **Quick Start**: [docs/getting-started/zero-config-setup.md](docs/getting-started/zero-config-setup.md)
+- **Windows Users**: [docs/getting-started/windows-setup.md](docs/getting-started/windows-setup.md)
+- **Troubleshooting**: [docs/troubleshooting/troubleshooting.md](docs/troubleshooting/troubleshooting.md)
 
 ### Help & Community
 - **Issues**: Open an issue on GitHub
 - **Discussions**: GitHub Discussions
-- **Setup Help**: See [docs/NATIVE_SETUP.md](docs/NATIVE_SETUP.md)
+- **Setup Help**: See [docs/getting-started/native-setup.md](docs/getting-started/native-setup.md)
 
 ---
 
@@ -856,9 +902,9 @@ Built with:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: 2026-03-13  
+**Last Updated**: 2026-03-14  
 **Status**: ✅ Production Ready  
-**Supported Providers**: 10+ LLM providers (OpenAI, Anthropic, Groq, Together AI, Ollama, etc.)  
-**Deployment Options**: Docker, Native (Windows/Mac/Linux)  
-**Documentation**: 21 comprehensive guides in [docs/](docs/)  
+**Project Structure**: Clean and organized  
+**Documentation**: 22 comprehensive guides  
+**Scripts**: 18 automation scripts  
 **Setup Time**: 2-5 minutes (automated)

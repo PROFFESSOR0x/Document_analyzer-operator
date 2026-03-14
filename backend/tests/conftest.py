@@ -64,7 +64,7 @@ async def test_engine(test_settings: Settings):
         Async engine instance.
     """
     engine = create_async_engine(
-        test_settings.database_url,
+        str(test_settings.database_url),
         echo=False,
         pool_pre_ping=True,
     )
