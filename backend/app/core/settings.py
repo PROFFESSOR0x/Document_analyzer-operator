@@ -3,7 +3,7 @@
 from functools import lru_cache
 from typing import Optional
 
-from pydantic import Field, PostgresDsn, RedisDsn, field_validator
+from pydantic import Field, PostgresDsn, RedisDsn, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -119,7 +119,7 @@ class Settings(BaseSettings):
 
     @field_validator("database_url", mode="before")
     @classmethod
-    def assemble_database_url(cls, v: Optional[str], info) -> str:
+    def assemble_database_url(cls, v: Optional[str], info: ValidationInfo) -> str:
         """Assemble PostgreSQL connection URL from components."""
         if v:
             return v
@@ -136,7 +136,7 @@ class Settings(BaseSettings):
 
     @field_validator("redis_url", mode="before")
     @classmethod
-    def assemble_redis_url(cls, v: Optional[str], info) -> str:
+    def assemble_redis_url(cls, v: Optional[str], info: ValidationInfo) -> str:
         """Assemble Redis connection URL from components."""
         if v:
             return v

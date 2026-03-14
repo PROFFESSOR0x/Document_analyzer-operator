@@ -122,10 +122,18 @@ Write-Host "Installing frontend dependencies..." -ForegroundColor Cyan
 Set-Location -Path "..\frontend"
 if (Test-Path "package.json") {
     try {
-        npm install
+        # Try with legacy peer deps first (more compatible)
+        npm install --legacy-peer-deps
         Write-Host "[OK] Frontend dependencies installed" -ForegroundColor Green
     } catch {
-        Write-Host "[WARNING] npm install failed" -ForegroundColor Yellow
+        Write-Host "[WARNING] npm install failed, trying without legacy flag..." -ForegroundColor Yellow
+        try {
+            npm install
+            Write-Host "[OK] Frontend dependencies installed" -ForegroundColor Green
+        } catch {
+            Write-Host "[ERROR] npm install failed" -ForegroundColor Red
+            Write-Host "You can install manually: cd frontend; npm install" -ForegroundColor Yellow
+        }
     }
 } else {
     Write-Host "[WARNING] package.json not found" -ForegroundColor Yellow

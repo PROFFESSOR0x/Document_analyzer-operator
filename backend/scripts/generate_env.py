@@ -505,7 +505,14 @@ Examples:
         default=4,
         help="Number of workers (default: 4)"
     )
-    
+
+    parser.add_argument(
+        "--reload",
+        action="store_true",
+        default=False,
+        help="Enable auto-reload (default: false)"
+    )
+
     parser.add_argument(
         "--log-level",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
